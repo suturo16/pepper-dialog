@@ -103,8 +103,10 @@ class DialogCoreClientManager(object):
 
 if __name__=="__main__":
     
-    try:
+    try:	
         DialogCoreClientManager()
+	rospy.loginfo('We came here')
         rospy.spin()
     except:
-        rospy.loginfo("core server Manager shut down ...")
+	e = sys.exc_info()[0]
+        rospy.loginfo("Danger: An ERROR ocurred: %s" % e)
