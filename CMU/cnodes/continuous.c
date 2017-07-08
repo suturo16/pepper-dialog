@@ -515,8 +515,11 @@ void *recognizer(void*arg)
 
      int i;
      i=*((int*)arg);
-     configobj[i]= cmd_ln_init(NULL,  cont_args_def, TRUE, "-dict", configDict[i],"-lm", configLM[i], "-inmic", "yes",NULL);
-    
+     if(FALSE)
+        configobj[i]= cmd_ln_init(NULL,  cont_args_def,TRUE, "-dict", configDict[i],"-lm", configLM[i], "-inmic", "yes",NULL);
+    else
+        configobj[i]= cmd_ln_init(NULL,  cont_args_def,TRUE,"-hmm",hmm,"-mllr",mllr, "-dict", configDict[i],"-lm", configLM[i], "-inmic", "yes",NULL);
+
      /* Handle argument file as -argfile. */
     if (configobj[i] && (cfg = cmd_ln_str_r(configobj[i], "-argfile")) != NULL) {
         configobj[i] = cmd_ln_parse_file_r(configobj[i], cont_args_def, cfg, FALSE);
@@ -567,7 +570,7 @@ int
 main(int argc, char *argv[])
 {
  //check all parameters are there
- if(argc!=10){
+ if(argc!=12){
    cout<<endl<<endl<<"Error in sphinx asr: incorrect parameters..."<<endl<<endl;
    return 0;
  
@@ -593,7 +596,11 @@ main(int argc, char *argv[])
    cout<<endl<<"RPCPORT: "<<RPCPORT<<endl;
    TRESHOLD=atoi(argv[9]);
    cout<<endl<<"TRESHOLD: "<<TRESHOLD<<endl;
-   //create configuration
+   HMM=string(argv[10]);
+   cout<<endl<<"HMM: "<<HMM<<endl;
+   MLLR=string(argv[11]);
+   cout<<endl<<"MLLR: "<<MLLR<<endl;
+   //create configuration data
    int i;
    for(i=0;i<PNBTHREADS;i++){
       configDict[i]=stconvert(ASRCWD+"/"+DATAPATH+"/pepper"+string(stconvert(INDEX+i))+".dic");
@@ -601,8 +608,10 @@ main(int argc, char *argv[])
       configLM[i]=stconvert(ASRCWD+"/"+DATAPATH+"/pepper"+string(stconvert(INDEX+i))+".lm");
       cout<<endl<<"LM: "<<configLM[i]<<endl;
    }
-
    
+   hmm=stconvert(ASRCWD+"/"+HMM);
+   mllr=stconvert(ASRCWD+"/"+MLLR);
+
    int t=0,rc;
    strlen(NULL);
    //init gstreamer
