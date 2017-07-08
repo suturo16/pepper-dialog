@@ -30,12 +30,14 @@
  <param name="ASRPATH" value="./CMU/sphinx-source/pocketsphinx/src/programs/pocketsphinx_continuous"/>
  <param name="ASRCWD" value="$(find dialogsystem)"/>
  <param name="TRESHOLD" value="-10000"/>
+ <param name="HMM" value="model/en-us-adapt"/>
+ <param name="MLLR" value="model/mllr_matrix"/>
 
  <param name="RHOST" value="192.168.101.69"/>
  <param name="RUSERNAME" value="nao"/>
  <param name="RPASSWORD" value="iai" />
  <param name="RPORT" value="22"/>
- 
+
  <param name="ORDER" value="0"/>
 
 
