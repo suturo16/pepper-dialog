@@ -9,7 +9,7 @@ import subprocess
 # Sphinx-based ASR
 
 
-#https://youtu.be/0AwNGTP6C_M
+
 class AsrSphinx:
    def __init__(self):
       try:
@@ -29,11 +29,11 @@ class AsrSphinx:
         self.ASRPATH= rospy.get_param("ASRPATH", "pocketsphinx_continuous")
         self.ASRCWD=rospy.get_param("ASRCWD", "/home/franklin/Desktop/sut/src/pocketsphinx")
         self.TRESHOLD=rospy.get_param("TRESHOLD", "-10000")
+        self.HMM=rospy.get_param("HMM", "model/en-us-adapt")
+        self.MLLR=rospy.get_param("MLLR", "model/mllr_matrix")
         rospy.loginfo("Parameters loaded in sphinx asr node...")
-        self.ASRPROCESS=subprocess.Popen([self.ASRPATH,str(self.INDEX),str(self.NBTHREADS),str(self.BEAMSIZE),str(self.HOST),str(self.PORT),str(self.DATAPATH),str(self.ASRCWD),str(self.RPCPORT),str(self.TRESHOLD)],cwd=self.ASRCWD) 
-        rospy.sleep(10)  
+        self.ASRPROCESS=subprocess.Popen([self.ASRPATH,str(self.INDEX),str(self.NBTHREADS),str(self.BEAMSIZE),str(self.HOST),str(self.PORT),str(self.DATAPATH),str(self.ASRCWD),str(self.RPCPORT),str(self.TRESHOLD),str(self.HMM),str(self.MLLR)],cwd=self.ASRCWD)   
         rospy.loginfo("Started in sphinx asr node...") 
-        rospy.set_param("ORDER", "1") 
         self.sleep()
       except:
         rospy.loginfo("Error in sphinx asr node...") 
@@ -47,11 +47,9 @@ class AsrSphinx:
       
    def sleep(self):
         while not rospy.is_shutdown():
-              rospy.sleep(5)
+              rospy.sleep(10)
  
    
 if __name__=="__main__":
    AsrSphinx()
        
-       
-   
