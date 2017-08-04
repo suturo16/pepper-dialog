@@ -1,0 +1,203 @@
+	     
+topic: ~INTRODUCTIONS bot=pepper keep repeat  (~emohello ~emohowzit my I am me ~humannames ~noanswer you ~yesanswer who are ~BAD not ~GOOD   ~propername where come how from old ~emothanks  name ~qwords ~ages ~health ~place ~numbers ~MISUNDERSTANDING  ~EXCEPTION)
+
+
+#! requesters for users data
+t: GETUSERDATA ()
+	$SETUSERDATA;
+	[please just let me register you]
+	[please just let me announce you]
+	a: (_~humannames _~numbers)
+		$share_username='_0
+		$share_userid= _1 
+		[welcome again to caterRos cafe]
+		[just feel at home]
+		[we will take care of you]
+                . $share_username
+
+	a: (!~EXCEPTION)
+		^reuse(GETUSERDATA)
+        
+	
+
+#! responders for MISUNDERSTANDING
+u: ( ~MISUNDERSTANDING)
+   $MISUNDERSTANDING
+
+
+# responders for GREETINGS
+
+u: (~emohello) 
+
+   if(%hour<12 ) 
+    {good morning} 
+   else if(%hour<16) 
+         {good afternoon.} 
+       else 
+         {good evening.}
+
+u: ( [name "who are you" <<"I am" !~number>> ~humannames] ) 
+   if($share_username!=null){
+   [I am][my name is] $share_peppername. [did I greet you][were you not here before]
+   }
+   else{
+        [I cant imagine that I forgot your name. it is so surprising]
+	[why cant I remember your name. I dont understand. anyway I will find out why]
+	[normally I should be able by now to have your name. but it seems not to be the case. something is wrong]  
+   }
+
+   a: (~noanswer) 
+       [I dont believe you][I dont think][it is impossible]
+   a: (~yesanswer)
+      [hummm][ok][good]
+
+#! requesters for HOWGREETINGS
+ 
+t: HOWGREETINGS () 
+   
+    if($share_userhow!=null){
+      ^reuse(PRIVATEGREETINGS)
+   }else{
+    
+   [I am good][I am fine][I am feeling good][I am ok] now. and you.
+   }
+   #! good
+   a: ([<<not ~BAD>> << !not ~GOOD>>]) 
+      nice to hear it from you.
+      $share_userhow = good
+   #! bad 
+   a: ([<<not ~GOOD>> << !not ~BAD>>]) 
+      I am so sorry to hear it
+      $share_userhow = bad
+      if($share_username){
+         $share_username
+        }
+
+#! responders for HOWGREETINGS
+
+u: ( [~health <<~emohowzit !~number !old>>] ) 
+   if($share_userhow!=null){
+     [I am good][I am fine][I am feeling good][I am ok] now. [did I greet you][were you not here before]
+   }else{
+   ^reuse(HOWGREETINGS) }
+   
+  a: (~noanswer) 
+       [I dont believe you][I dont think][it is impossible]
+   a: (~yesanswer)
+      [hummm][ok][good]
+
+
+#! deep understanding of interlocutor
+t:  PRIVATEGREETINGS ()
+    $share_username. [I would like to know you well.][I want to know much about you.] or you dont want
+    a: (~noanswer)  
+       ^gambit(~bakery_service)   
+
+
+    a: ([~yesanswer "I want" "why not"])
+       ^reuse(AGEGREETINGS) 
+    
+    a: ([why "why do you"])
+       [just to know who you are.]
+       [It will be also possible to learn something from you.]
+       [just for my knowledge.]
+
+
+
+
+#! requesters as AGES
+
+t: AGEGREETINGS ()
+   if($share_userage!=null){
+      ^reuse(ORIGINGREETINGS)
+   }else{
+    
+   I am $share_pepperage. [how old are you][and you]
+   }
+
+  
+  a: (_~number) 
+   $share_userage = _0
+   $share_userage years old.
+   if($share_userage > $share_pepperage)
+     {so you are older than I. congratulations}
+   else 
+     if($share_userage < $share_pepperage)
+       {so I am your elder brother}
+     else
+        if($share_userage==$share_pepperage)
+       {so I am old as you.}
+   
+  a: (!~number)
+     $share_userage = $share_pepperage
+     sorry [is it your age. it does not sound like][I cannot get you]  
+
+
+#! responders as AGES
+
+u: ([~ages << ~qwords old  you>>]) 
+   if($share_userage!=null){
+     I am $share_pepperage. [did I tell you my age][were you not here before]
+   }else{
+   ^reuse(AGEGREETINGS)}
+
+   a: (~noanswer) 
+       [I dont believe you][I dont think][it is impossible]
+   a: (~yesanswer)
+      [hummm][ok][good]
+
+#! requesters for ORIGINGREETINGS
+
+t: ORIGINGREETINGS () 
+   if($share_userorigin!=null){
+      ^reuse(THANKGREETINGS)
+   }else{    
+    I [am][come] from $share_pepperorigin. [and you][where do you come from][where are you from]
+   }
+  
+   a: (_~propername)
+      $share_userorigin= '_0
+      if($share_userorigin == $share_pepperorigin)
+        {Nice to hear it brother}
+      else
+        {I have never been in $share_userorigin. I guess it is great}
+
+   a: (!~propername)
+       $share_userorigin = $share_pepperorigin
+       I have never heard about it.
+
+#! responders for ORIGINGREETINGS
+      
+u: ([~place <<~qwords [come are am] from>>])
+   if($share_userorigin!=null){
+      I [am][come] from $share_pepperorigin. [did I tell you my origin][were you not here before]
+   }else{
+   ^reuse(ORIGINGREETINGS)}
+
+   a: (~noanswer) 
+       [I dont believe you][I dont think][it is impossible]
+   a: (~yesanswer)
+      [hummm][ok][good]
+
+
+a
+#! requesters for THANKGREETINGS
+
+t: THANKGREETINGS ()
+    if($thankyou){
+     ^gambit(~bakery_service) 
+   }else{   
+    $thankyou="thankyou" 
+    nice again to [be][see][meet] with you.
+   
+   } 
+   
+
+#! responders for THANKGREETINGS
+
+u: (~emothanks)
+   [thank you too][dont mention][your are so kind][you are wellcome]
+
+#! responders for MISUNDERSTANDING
+u: (["i dont get you" "i didnt get" "i dont understand" "it is not clear" "can you repeat" "could you reapet" "not understood" "it is unclear" "one more time"])
+   $MISUNDERSTANDING

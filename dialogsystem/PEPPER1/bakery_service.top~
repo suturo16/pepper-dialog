@@ -1,0 +1,577 @@
+outputmacro: ^cutcake($_n)
+               ^return(^join(CUTCAKE ; $share_username ; $share_userid ; $REGISTERED ; $ORDERTYPE ; $_n))
+     
+
+     
+topic: ~bakery_service bot=pepper keep repeat (~bakery cake ~eat ~yesanswer ~eatery ~increaseorder ~decreaseorder ~noanswer ~beverage ~drink ~help ~want 
+                                     ~food ~act ~location ~EXCEPTION ~qwords ~occupation menu ~MISUNDERSTANDING UPDATEUSERDATA ~numbers )
+
+
+                                           
+
+
+
+#! responders for MISUNDERSTANDING
+
+#! responders for seat
+
+u: SEAT (<<[where ~help ~want "would like" ~act  give offer] ~location>>)
+   if($share_username!=null){
+         $share_username
+        }.
+   if($share_userlocation!=null){
+      .[you should sit at $share_userlocation]
+       [your seat is $share_userlocation]      
+
+   }else{
+      .[you must first order something before getting a seat]
+       [prior to get a seat you must order]
+
+  }
+  
+
+
+
+
+u: ( ~MISUNDERSTANDING)
+   $MISUNDERSTANDING
+
+#! responders for User data update
+# location ordered delivered
+u: UPDATEUSER (UPDATEUSERDATA  _* _~numbers _~numbers )   
+	      $share_useramountcakedelivered = _2
+	      $share_useramountcakeordered = _1
+	      $share_useramountcakeremaining = ^compute($share_useramountcakeordered - $share_useramountcakedelivered)
+	      $share_userlocation = '_0
+	      $REGISTERED=TRUE
+	      .[hummmmm]
+	      [wouaouuuuhh].
+	      if($share_username!=null){
+        	 $share_username
+              }.
+              [I just want  to imform you about the progress of your order]
+	      [I just want to give you information about the progress of your order]
+	      [I got feedbacks about your order from the baker].
+              [you should sit at $share_userlocation.]
+	      [please you should have seat at $share_userlocation.]
+	      [please go to $share_userlocation.]
+	      till now you ordered $share_useramountcakeordered piece of cake.
+	      you received  $share_useramountcakedelivered piece.
+              that is why  the remaining part is $share_useramountcakeremaining piece.
+
+#! requesters as HELP
+
+
+t: HELP ()
+   $ORDERTYPE=NORMAL
+   [what can I do for you]
+   [is there something I may do for you]
+   [is there something I can do for you]
+   [how can I help you]
+   [what do you want me to do for you]
+   [what do you need]
+   [just tell me what I may offer you]
+   if($REGISTERED==TRUE){ again}.
+    if($share_username!=null){
+         $share_username
+        }.
+                                                                                        
+   a: CAKEHELP ([ ~yesanswer])
+	$ORDERTYPE=NORMAL
+#New client or user
+       if($REGISTERED==FALSE){
+       .[may I offer you cake]
+       [can I offer you cake]
+       [we have cake. would you like to have some piece]
+       [we have cake. would you like to get some piece]
+       [we have cake. would you like to eat some piece]
+       [can I offer you some piece of cake].
+       }else{
+#Old client or user
+	 if($share_useramountcakeremaining>0){
+	   .[you ordered $share_useramountcakeordered piece of cake. 
+            it remains $share_useramountcakeremaining piece of cake. would you like to make some change]
+	    [you still have $share_useramountcakeremaining piece of cake to collect. would you like to make some change]. 
+         }else{
+            .[we still have cake. would you like to have more]
+            [we still have cake. would you like to get more]
+            [we still have cake. would you like to eat more]
+            [can I offer you additional piece of cake].  
+         }
+       }
+       if($share_username!=null){
+         $share_username
+        }.
+       b: NUMBERPIECE1 (~yesanswer)
+           if($share_username!=null){
+         $share_username
+        }.
+	  if($REGISTERED==FALSE or $REGISTERED==TRUE and $share_useramountcakeremaining<=0 or $ORDERTYPE==DECREASE or $ORDERTYPE==INCREASE){
+		  .[how many piece would you like]
+		  [how many piece of cake do you want exactly]
+		  [how many piece of cake do you need exactly]
+		  [how many piece of cake exactly]
+		  if($ORDERTYPE==DECREASE or $ORDERTYPE==INCREASE){ to $ORDERTYPE}.
+          }else{ 
+                  .[do you want to increase or reduce the number of piece]
+		   [do you want more or less]
+		   [do you want more or fewer]
+		   [do you want to increase or decrease the number of piece]
+		   [do you want to add or drop some piece]
+	  }
+	  
+          c: ONEPIECE (<<!~increaseorder !~decreaseorder a>>)
+	      if($ORDERTYPE==DECREASE and $share_useramountcakeremaining<1){
+		      [sorry. you cannot lower your order. you didnt order enough before]
+		      [please a reduction is impossible. because you did not ordered enough before]
+		      [please you cannot take away more piece than you ordered].
+		      [actually you dont expect anything from us]
+		      [as far as I know. you dont have any piece of cake remaining].
+		      [however it might change as soon as I receive feedback from the baker]
+		      [but as soon as I get feedback from the bakery. I let you know]
+	      }else{
+		      ^cutcake(1);
+		      [Please let me call the bakery]
+		      [Please let me contact the baker]
+		      [Please let me forward your request to the bakery]
+		      [Please let me forward your request to the baker]
+	      }
+	      $ORDERTYPE=NORMAL
+               
+          c: NUMBERPIECE2 (<<!~increaseorder !~decreaseorder _~number>>)
+	             $NBERPIECE = _0
+		     if($ORDERTYPE==DECREASE){
+                         if($share_useramountcakeremaining<$NBERPIECE){
+			      [sorry. you cannot lower your order. you didnt order enough before]
+			      [please a reduction is impossible. because you did not ordered enough before]
+			      [please you cannot take away more piece than you ordered].
+                              [you just expect $share_useramountcakeremaining piece of cake from us]
+                              [as far as I know. only $share_useramountcakeremaining piece of cake will be delivered as ordered]
+			      .
+			      [however it might change as soon as I receive feedback from the baker. I will let you know anyway]
+			      [but as soon as I get feedback from the bakery. I let you know]
+
+			 }else{
+			      ^cutcake($NBERPIECE);
+			      [Please let me call the bakery]
+			      [Please let me contact the baker]
+			      [Please let me forward your request to the bakery]
+			      [Please let me forward your request to the baker]
+                        }
+	              }else if($NBERPIECE<20){
+        
+		              ^cutcake($NBERPIECE);
+			      [Please let me call the bakery]
+			      [Please let me contact the baker]
+			      [Please let me forward your request to the bakery]
+			      [Please let me forward your request to the baker]
+                            }
+                            
+                           
+                           else{ 
+				   so you need $NBERPIECE piece of cake.
+				    ^reuse(MANYPIECE)
+                           }
+		     $ORDERTYPE=NORMAL	
+
+		           
+          c: MANYPIECE (<<!~increaseorder !~decreaseorder many>>)
+              .[sorry. 
+              we can just offer you less than twenty one piece of cake at a time for the moment.
+              would you like to order less]
+              [I regret that we cannot provide you with more than twenty piece of cake at once for now.would you like to change].
+              if($share_username!=null){
+                 $share_username
+              }.
+	      $ORDERTYPE=NORMAL
+
+              d: (~yesanswer)
+                ^reuse(NUMBERPIECE1)
+              d: (~noanswer)
+                 [sorry that we cannot help you]
+                 [sorry that we cannot provide this service]
+                 [sorry that I am not helpful].
+                 if($share_username!=null){
+                    $share_username
+                 }.
+          c: CHANGEORDER1 (~increaseorder)
+	     $ORDERTYPE=NORMAL 
+	     if($REGISTERED==TRUE){
+	        $ORDERTYPE=INCREASE
+	        ^reuse(NUMBERPIECE1)
+             }else{
+                 .[Please you cannot require more cake if you have not ordered yet]
+		  [Please order first before you can increase]
+		  [Please prior to increase you must order first].
+		  ^reuse(CAKEHELP)
+             }
+
+	  c: CHANGEORDER2 (~decreaseorder)
+	     $ORDERTYPE=NORMAL 
+	     if($REGISTERED==TRUE){
+		     $ORDERTYPE=DECREASE
+		     ^reuse(NUMBERPIECE1)
+             }else{
+		  .[Please you cannot require less or fewer cake if you have not ordered yet]
+		  [Please order first before you can decrease or reduce]
+		  [Please prior to decrease you must order first].
+		  ^reuse(CAKEHELP)
+
+	     }
+          c: ( ~noanswer)
+	      $ORDERTYPE=NORMAL
+             .[Ok. no problem]
+	      [sorry].
+	
+	  c: ( * )
+	     $ORDERTYPE=NORMAL
+	     [so you dont want anything more. anyway I cancel the process]
+	     [dont worry. I just cancel the order process]   
+  
+       b: (~noanswer)
+         [do you want something else]
+	 [do you desire something else]
+	 [were you expecting something else from us]
+          c: (~yesanswer)
+             [sorry. For the moment we just offer cake]
+	     [sorry. For the moment we just bake]
+	     [sorry. For the moment we just have cake]
+          c: (~noanswer)
+             so let talk
+
+a: (<<[~help ~want "would like" ~act cut give offer] !~number !~increaseorder !~decreaseorder !what !a !many [~bakery cake]>>)
+        ^reuse(NUMBERPIECE1)
+
+a: (<<[~help ~want "would like" ~act cut give offer] !~number !~increaseorder !~decreaseorder  !what a !many [~bakery cake]>>)
+        ^reuse(ONEPIECE)
+
+a: (<<[~help ~want "would like" ~act cut give offer] many !~increaseorder !~decreaseorder !what !~number !a [~bakery cake]>>)
+        ^reuse(MANYPIECE)
+
+a: (<<[~help ~want "would like" ~act cut give offer] _~number !~increaseorder !~decreaseorder !a !many !what [~bakery cake]>>)
+       $NBERPIECE = _0
+		     if($ORDERTYPE==DECREASE){
+                         if($share_useramountcakeremaining<$NBERPIECE){
+			      [sorry. you cannot lower your order. you didnt order enough before]
+			      [please a reduction is impossible. because you did not ordered enough before]
+			      [please you cannot take away more piece than you ordered].
+                              [you just expect $share_useramountcakeremaining piece of cake from us]
+                              [as far as I know. only $share_useramountcakeremaining piece of cake will be delivered as ordered]
+			      .
+			      [however it might change as soon as I receive feedback from the baker. I will let you know anyway]
+			      [but as soon as I get feedback from the bakery. I let you know]
+
+			 }else{
+			      ^cutcake($NBERPIECE);
+			      [Please let me call the bakery]
+			      [Please let me contact the baker]
+			      [Please let me forward your request to the bakery]
+			      [Please let me forward your request to the baker]
+                        }
+	              }else if($NBERPIECE<20){
+        
+		              ^cutcake($NBERPIECE);
+			      [Please let me call the bakery]
+			      [Please let me contact the baker]
+			      [Please let me forward your request to the bakery]
+			      [Please let me forward your request to the baker]
+                            }
+                            
+                           
+                           else{ 
+				   so you need $NBERPIECE piece of cake.
+				    ^reuse(MANYPIECE)
+                           }
+		     $ORDERTYPE=NORMAL	
+
+
+
+a: (~increaseorder)
+	$ORDERTYPE=NORMAL
+	if($REGISTERED==TRUE){
+	        $ORDERTYPE=INCREASE
+	        ^reuse(NUMBERPIECE1)
+             }else{
+                 .[Please you cannot require more cake if you have not ordered yet]
+		  [Please order first before you can increase]
+		  [Please prior to increase you must order first].
+		  ^reuse(CAKEHELP)
+             }
+
+a: (~decreaseorder)
+	$ORDERTYPE=NORMAL
+	if($REGISTERED==TRUE){
+		     $ORDERTYPE=DECREASE
+		     ^reuse(NUMBERPIECE1)
+             }else{
+		  .[Please you cannot require less or fewer cake if you have not ordered yet]
+		  [Please order first before you can decrease or reduce]
+		  [Please prior to decrease you must order first].
+		  ^reuse(CAKEHELP)
+
+	     }
+
+a: (<<[~help ~want "would like" ~act cut give offer] ~MISUNDERSTANDING !what !cake>>)    
+   ^reuse(HELP) 
+
+a: ( ~noanswer)
+       so let talk 
+   
+
+a: ([ ~beverage ~drink] )
+       [sorry. we just have cake]
+       ^reuse(CAKEHELP) 
+
+   
+         
+             
+          
+
+      
+#! responders as HELP
+ 
+
+u: (<<[~help ~want "would like" ~act cut give offer] !~number !what !~increaseorder !~decreaseorder !a !many [~bakery cake]>>)
+	$ORDERTYPE=NORMAL
+        ^reuse(NUMBERPIECE1)
+
+u: (<<[~help ~want "would like" ~act cut give offer] !~number !what !~increaseorder !~decreaseorder a !many [~bakery cake]>>)
+	$ORDERTYPE=NORMAL
+        ^reuse(ONEPIECE)
+
+u: (<<[~help ~want "would like" ~act cut give offer] many !what !~number !~increaseorder !~decreaseorder !a [~bakery cake]>>)
+	$ORDERTYPE=NORMAL
+        ^reuse(MANYPIECE)
+
+u: (<<[~help ~want "would like" ~act cut give offer] _~number !a !many !~increaseorder !~decreaseorder !what [~bakery cake]>>)
+    $ORDERTYPE=NORMAL
+    $NBERPIECE = _0
+		     if($NBERPIECE<=20){
+			   ^cutcake($NBERPIECE)
+			    ;
+			   [Please let me call the bakery]
+	                   [Please let me contact the baker]
+			   [Please let me forward your request to the bakery]
+	                   [Please let me forward your request to the baker]
+			   }else{ 
+			 
+				   so you need $NBERPIECE piece of cake.
+				    ^reuse(MANYPIECE)
+                           }
+
+		          
+
+
+u: (~increaseorder)
+	$ORDERTYPE=NORMAL
+	if($REGISTERED==TRUE){
+	        $ORDERTYPE=INCREASE
+	        ^reuse(NUMBERPIECE1)
+             }else{
+                 .[Please you cannot require more cake if you have not ordered yet]
+		  [Please order first before you can increase]
+		  [Please prior to increase you must order first].
+		  ^reuse(CAKEHELP)
+             }
+
+u: (~decreaseorder)
+	$ORDERTYPE=NORMAL
+	if($REGISTERED==TRUE){
+		     $ORDERTYPE=DECREASE
+		     ^reuse(NUMBERPIECE1)
+             }else{
+		  .[Please you cannot require less or fewer cake if you have not ordered yet]
+		  [Please order first before you can decrease or reduce]
+		  [Please prior to decrease you must order first].
+		  ^reuse(CAKEHELP)
+
+	     }
+
+
+u: (<<[~help ~want "would like" ~act cut give offer]  ~MISUNDERSTANDING !what !cake>>)  
+   $ORDERTYPE=NORMAL  
+   ^reuse(HELP)  
+
+u: (<<!how [~act may offer give cut] !cake what>>)
+    if($share_username!=null){
+         $share_username
+        }
+.
+   [we are specialized in the baking.We have a backery. If you need cake. just let me know. and I will order it for you. and when it will be ready. I will let you know. The turtle robot will bring it to you.]
+   [for the moment we just bake.We have a backery. If you need cake. just let me know. and I will order it for you. and when it will be ready. I will let you know. The turtle robot will bring it to you.]
+
+
+
+u: EXCEPTION (_~EXCEPTION)
+   $STATUS='_0
+  if($UNKNOWN_PERSON==$STATUS){
+	[I dont know who is talking. please move away and then come next to me so that I can identify you]
+	[who is talking. I cannot identify you. please can you come next to me]
+	[please come next to me for me to identify you].
+         if($share_username!=null){
+           $share_username
+         }.
+    }
+    else if($UNKNOWN_RETURN==$STATUS){
+	[I dont know. but something is wrong with the data from the baker]
+	[the data from the bakery seem to be incorrect]
+	[I dont understand. The baker is sending me invalid data.]
+         if($share_username!=null){
+           $share_username
+         }.
+	however. 
+	[I am still available]
+	[I can still offer my service]
+	[I will still continue to work]
+
+   }
+   else if($UNKNOWN_QUESTION==$STATUS){
+   [I am sorry I dont get you]
+   [can you be clear a little bit more please]
+   [could you please repeat].
+    if($share_username!=null){
+         $share_username
+        }.
+   }else if($UNKNOWN_PARAMETER==$STATUS){
+              
+	[I dont know. but something is wrong with my database]
+	[I found some problems when trying to analyse my data]
+	[something sounds strange. I cannot process my data correctly.].
+         if($share_username!=null){
+           $share_username
+         }.
+        [The problem is that. I might forget what was told to me recently]	
+	[and such a thing can cause short term memory loss to me].
+	however. 
+	[I am still available]
+	[I can still offer my service]
+	[I will still continue to work]
+
+        }else  if($PROCESSING_REQUEST_SHORT==$STATUS){
+		    ok. 
+		    [just wait for a few minutes.]
+		    [your cake will be ready very soon]
+		    [I let you know when it is ready] 
+		    [I let you know when your cake is ready].
+		     if($share_username!=null){
+                       $share_username
+                     }.
+		    
+                     if($share_userlocation==null){
+                       [please give me few seconds to get a free seat for you]
+		       [please give me few seconds to find a free place for you]
+		       [please you also need a table. just let me get one for you].
+                     }   
+                     if($share_username!=null){
+                        $share_username
+                     }.    
+		  } else if($REQUEST_FAILED==$STATUS){
+			    sorry. 
+			    [I cannot get the cake right now. the bakery may be actually closed]
+			    [the bakery is inaccessible]   
+			    [I found some problems. I cannot provide you this service right now].
+				 if($share_username!=null){
+                                      $share_username
+                                  }.  
+			
+			   }else if($PROCESSING_REQUEST_LONG==$STATUS){                          
+				   ok 
+				   [just wait]
+				   [I let you know when your cake is ready]
+				   [I let you know when it is done].
+				   it may take some time.
+				   if($share_location==null){
+				       [please give me few seconds to get a free seat for you]
+				       [please give me few seconds to find a free place for you]
+				       [please you also need a table. just let me get one for you].
+				     }  
+                                    
+                                     if($share_username!=null){
+                                       $share_username
+                                     }
+				    
+				  }else if($REQUEST_DONE==$STATUS){
+                                         ok your cake is [ready][done][coming][on the way].
+                                           if($share_username!=null){
+                                             $share_username
+                                            }.
+                                        [I will inform you later on the evolution of your order]
+					[I will give you more information about the evolution of your request later]
+					[I will inform you about the remaining part later]
+                                  }else if($REQUEST_FINAL_FAILED==$STATUS){
+                                           sorry.
+                                           [the baker cannot complete the baking]
+                                           [the baker cannot provide your cake]
+					   [your order could not be executed]
+                                           [your request could not be accepted]
+                                           [the baking was unsuccessful].
+                                            if($share_username!=null){
+                                               $share_username
+                                            }.
+					  however.
+					  [I will still inform you later about the evolution of your order]
+					  [I will still give you more information about the evolution of your request later]
+					  [I will still inform you about the remaining part later]
+						
+                                          }
+
+    
+
+   a: (~qwords)
+      if($PROCESSING_REQUEST_LONG==$STATUS)
+         {[the bakery might be full of orders]
+          [the baker might be too busy].
+         }
+      else if($REQUEST_FAILED==$STATUS){
+	      [I cannot join the baker]
+	      [there is no one in the bakery]
+	      [the baker does not answer my call]
+           }else if($REQUEST_FINAL_FAILED==$STATUS)){
+		   [I dont know exactly what happened]
+		   [it might be a technical issue]
+		  }else if($UNKNOWN_PARAMETER==$STATUS){
+			   [since the data from the baker seem to be corrupted. he might think that they were correctly delivered]
+			   [. our belief states can become inconsistent for a very short time]
+			  }else if($UNKNOWN_RETURN==$STATUS){
+				    [I dont know exactly what happened]
+		   		    [it might be a technical issue]
+				  }
+
+
+#! requesters for TASTECAKE
+
+t: TASTECAKE ()
+   [you will like our delicious cake][our cake tastes really good].
+    if($share_username!=null){
+         $share_username
+        }.
+   a: ([~yesanswer really])
+      [I promise you]
+      [really]
+      [dont worry. it is delicious]
+
+
+t: FEEDBACK ()
+   [just give me feedback after eating][just appreciate the cake after eating].
+    if($share_username!=null){
+         $share_username
+        }.
+   a: ([~yesanswer why])
+      [thank you. you are wellcome]
+      [nice to hear it from you]
+      [it will be helpful for improving our service]
+   a: (~noanswer)
+      dont worry. I mean if you eat the cake
+
+t: SERVICE ()
+     if($share_username!=null){
+         $share_username
+        }.
+   [how can we improve our services][which service would you expect from us] next time
+   a: (_[~beverage ~food ~occupation ])
+      $service = '_0
+      dont worry. next time we provide you with $service
+   a: (![~beverage ~food ~occupation ])
+      sorry. I cannot get your [preoccupation][wish][need]
+
+

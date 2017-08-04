@@ -1,0 +1,11 @@
+import numpy as np
+import faceDetector as f
+import glob
+
+
+d=f.FaceDetector('../data/facerecognition/haarcascade_frontalface_default.xml')
+l=glob.glob('../data/facerecognition/*.jpg')
+for i in range(len(l)):
+	d.detectFace(l[i],'copy/'+str(i)+'.jpg',1.1,6,(30,30))
+
+
