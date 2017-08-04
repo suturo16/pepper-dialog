@@ -1,0 +1,7 @@
+#general dialog-vision service signature
+
+dialog_msgs/DialogVisionMsg data_in
+
+---
+
+dialog_msgs/DialogVisionMsg data_out

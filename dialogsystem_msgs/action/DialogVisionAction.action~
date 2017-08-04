@@ -1,0 +1,17 @@
+#general dialog-vision Action signature
+
+#goal
+dialog_msgs/DialogVisionMsg data_in
+
+---
+
+#result
+dialog_msgs/DialogVisionMsg data_out
+
+---
+
+#Feedback
+dialog_msgs/DialogVisionMsg feedback
+
+
+

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>dialogsystem_msgs</name>
+  <version>1.5.0</version>
+  <description>ros messages/actions/services for information interchange in the dialog system for pepper robot between CV and NLP: combines CV(computer vision) and NLP(Natural Language Processing) for more semantic dialog</description>
+  <maintainer email="fkenghag@uni-bremen.de">Franklin Kenfack Kenghagho</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>genmsg</build_depend>
+  <build_depend>message_generation</build_depend>
+  
+  <exec_depend>actionlib_msgs</exec_depend>
+  <exec_depend>dialogsystem_msgs</exec_depend>
+  <exec_depend>genmsg</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  
+
+  
+</package>
