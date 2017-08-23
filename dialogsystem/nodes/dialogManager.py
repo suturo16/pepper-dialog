@@ -22,8 +22,6 @@ class DialogManager:
  
         ################# attributes ###########################
 	self.GETGUESTINFO='GETGUESTINFO'
-	self.LASTTIMEIDENTIFY='LASTTIMEIDENTIFY'
-	self.ONEMORETIMEIDENTIFY='ONEMORETIMEIDENTIFY'
         self.SIMPLEREQUEST='SIMPLEREQUEST'
 	self.ERRORREQUEST='ERRORREQUEST'
 	self.UNKNOWN_RETURN='UNKNOWNRETURN'
@@ -213,11 +211,11 @@ class DialogManager:
 			 if typ=='getGuestInfo':
 				   userid=str(int(message['guestId'].encode('utf8').rstrip().lstrip()))
 				   username=str(int(message['return']['name'].encode('utf8').rstrip().lstrip()))
-				   location=str(message['return']['location'].encode('utf8').rstrip().lstrip())
+				   tableId=str(message['return']['tableId'].encode('utf8').rstrip().lstrip())
 				   delivered=str(int(message['return']['delivered'].encode('utf8').rstrip().lstrip()))
 				   total=str(int(message['return']['total'].encode('utf8').rstrip().lstrip()))
 				   bot='pepper'
-				   cInput= self.UPDATEUSERDATA+' '+location+' '+total+' '+delivered
+				   cInput= self.UPDATEUSERDATA+' '+tableId+' '+total+' '+delivered
 				   #send response to ChatScript
 				   self.corepub.publish(self.GETGUESTINFO+';'+username+';'+userid+';'+bot+';'+cInput)
 				
