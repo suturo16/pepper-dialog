@@ -20,8 +20,10 @@ $botprompt = ^"PEPPER-Authentification: "
 $IDENTIFY= IDENTIFY
 $AUTHPASS= AUTHPASS
 $UNKNOWN_RETURN=UNKNOWN_RETURN
-$ONEMORETIMEIDENTIFY=ONEMORETIMEIDENTIFY
-$LASTTIMEIDENTIFY=LASTTIMEIDENTIFY
+$IDENTIFYONEMORETIME=IDENTIFYONEMORETIME
+$IDENTIFYLASTTIME=IDENTIFYLASTTIME
+$LASTCOMMAND=$IDENTIFY
+$IDENTIFYMUTE=IDENTIFYMUTE
 
 #pepper robot data
 $share_peppername = Franklin
@@ -129,6 +131,5 @@ u: () # main per-sentence processing
                  [can you be clear a little bit more please]
                  [could you please repeat]	  
 	}
-
 
 
