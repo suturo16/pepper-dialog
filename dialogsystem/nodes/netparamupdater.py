@@ -81,4 +81,3 @@ if __name__=="__main__":
          Updater().run()
     except:
         rospy.loginfo("Shutting down netparamupdater...")
-
