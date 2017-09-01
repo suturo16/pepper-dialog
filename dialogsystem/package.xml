@@ -22,12 +22,14 @@
   <exec_depend>naoqi_bridge_msgs</exec_depend>
   <!-- package naoqi(nao driver) is downloadable from Aldebaran website -->
   <!-- under the name pynaoqi-python2.7-2.1.4.13-linux64 -->
-  <exec_depend>naoqi</exec_depend>
+  <exec_depend>python-naoqi-sdk</exec_depend>
+  <exec_depend>python</exec_depend>
   <exec_depend>actionlib</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>python-numpy</exec_depend>
-  <exec_depend>python</exec_depend>
+  
+  
   <!-- For integration of ChatScript:git https://github.com/bwilcox-1234/ChatScript -->
  
 
