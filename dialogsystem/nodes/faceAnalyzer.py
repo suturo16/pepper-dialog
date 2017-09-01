@@ -19,7 +19,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import roslib
 import mutex
-
+import utility as u
  
 class FaceDetector(object):
 	def __init__(self,cascadeFile):
@@ -87,7 +87,8 @@ class FaceRecognizer(object):
 			self.cvSynchImage.testandset()
 			#lock model for training
 			self.cvSynchronizer.testandset()
-
+			#create utilities
+			self.ut=u.Utility(None)
 			#actions and services
 			#service server to handle dialogManager's requests
 			self.dgVsSrv=rospy.Service('dialogVisionService',DialogVisionService,self.dgVsSrvHandler)
@@ -99,6 +100,7 @@ class FaceRecognizer(object):
 			self.sub = rospy.Subscriber("rosCamera/image",Image,self.imageBuffering)
 
 			#parameters
+			self.cvReset=rospy.get_param('CVRESET','off')
 			self.pathToDataset=rospy.get_param('PATH_TO_DATASET','../data/facerecognition/faces')
 			self.pathToDetection=rospy.get_param('PATH_TO_DETECTION','../data/facerecognition/detection')
 			self.pathToDetector=rospy.get_param('PATH_TO_DETECTOR','../data/facerecognition/haarcascade_frontalface_default.xml')
@@ -127,10 +129,22 @@ class FaceRecognizer(object):
                      	self.total=0
 			self.success=0
 			self.currentImage=[]#current image
+			#create folders for online record of faces and detection
+			try:
+				if not os.path.exists(self.pathToDetection):
+	    				os.makedirs(self.pathToDetection)
+				if not os.path.exists(self.pathToDataset):
+	    				os.makedirs(self.pathToDataset)
+			except Exception,e:
+				rospy.logwarn('Failed to create folders for online record of faces and detection: '+str(e))
 			self.bridge = CvBridge()
 			self.facerec=cv2.face.createEigenFaceRecognizer()
 			self.facedec=FaceDetector(self.pathToDetector)
-
+			if(self.cvReset=='off'):
+		          for the_file in os.listdir(self.pathToDataset):
+				    file_path = os.path.join(self.pathToDataset, the_file)
+			            if os.path.isfile(file_path):
+					    os.unlink(file_path)     
 			#pretraining
 			imt,lt,imtt,ltt=self.loadDataset(self.pathToDataset,self.pathToDetection)
 			self.train(imt,lt)
@@ -428,7 +442,10 @@ class FaceRecognizer(object):
 								if score <= self.cvRthreshold:
 									data_out.accuracy='notwellknownperson'
 									data_out.userName=self.getNameById(self.pathToDataset,int(label))
-									data_out.userId=str(label).rstrip().lstrip()
+									userId1=str(label).rstrip().lstrip()
+									userId2=str(self.getNextId(self.pathToDataset))
+									data_out.userId=str(self.ut.compress(int(userId1),int(userId2)))
+									
 								else:
 									data_out.accuracy='unknownperson'
 									data_out.userName='unknownname'
