@@ -128,4 +128,3 @@ if __name__=="__main__":
     except:
         rospy.logwarn('Shutting down rosCamera node ...')
 
-
