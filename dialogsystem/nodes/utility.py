@@ -18,6 +18,17 @@ class Utility(object):
         self.dataset=[]
        
 
+    def compress(self,x,y):
+	return (x+y)*(x+y+1)/2 + y
+
+    def decompressX(self,z):
+	j  = int(np.floor(np.sqrt(0.25 + 2*z) - 0.5))
+	return j - (z - j*(j+1)/2)
+
+    def decompressY(self,z):
+	j  = int(np.floor(np.sqrt(0.25 + 2*z) - 0.5))
+	return z -j*(j+1)/2
+
     def parse(self):
         #Loading the dictionary
         rospy.loginfo('Loading and parsing dictionary...')
@@ -105,6 +116,5 @@ class Utility(object):
         for i in range(nfiles):
             np.savetxt(filename+str(k+i)+'.txt',data[i],fmt='%s')
                 
-
 
 
