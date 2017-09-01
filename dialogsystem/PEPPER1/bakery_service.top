@@ -39,25 +39,37 @@ u: ( ~MISUNDERSTANDING)
 #! responders for User data update
 # location ordered delivered
 u: UPDATEUSER (UPDATEUSERDATA  _* _~numbers _~numbers )   
-	      $share_useramountcakedelivered = _2
-	      $share_useramountcakeordered = _1
-	      $share_useramountcakeremaining = ^compute($share_useramountcakeordered - $share_useramountcakedelivered)
-	      $share_userlocation = '_0
-	      $REGISTERED=TRUE
-	      .
-	      if($share_username!=null){
-        	 $share_username
-              }.
-              [I just want  to imform you about the progress of your order]
-	      [I just want to give you information about the progress of your order]
-	      [I got feedbacks about your order from the baker].
-              [you should sit at $share_userlocation.]
-	      [please you should have seat at $share_userlocation.]
-	      [please go to $share_userlocation.]
-	      till now you ordered $share_useramountcakeordered piece of cake.
-	      you received  $share_useramountcakedelivered piece.
-              that is why  the remaining part is $share_useramountcakeremaining piece.
-
+	      if('_0==None){
+                 .
+		 if($share_username!=null){
+			 $share_username
+		 }.
+                 [sorry. we dont have free seat anymore. we cancelled your order]
+		 [we cannot further consider your order. there is no free place for you to sit]
+		 [sorry. we realized that all our customer seats are busy. that is why we cannot consider your order].
+		 
+              }
+	      else{
+		      $share_userlocation = '_0
+		      $share_useramountcakedelivered = _2
+		      $share_useramountcakeordered = _1
+		      $share_useramountcakeremaining = ^compute($share_useramountcakeordered - $share_useramountcakedelivered)
+		      
+		      $REGISTERED=TRUE
+		      .
+		      if($share_username!=null){
+			 $share_username
+		      }.
+		      [I just want  to imform you about the progress of your order]
+		      [I just want to give you information about the progress of your order]
+		      [I got feedbacks about your order from the baker].
+		      [you should sit at $share_userlocation.]
+		      [please you should have seat at $share_userlocation.]
+		      [please go to $share_userlocation.]
+		      till now you ordered $share_useramountcakeordered piece of cake.
+		      you received  $share_useramountcakedelivered piece.
+		      that is why  the remaining part is $share_useramountcakeremaining piece.
+	      }
 #! requesters as HELP
 
 
@@ -572,5 +584,4 @@ t: SERVICE ()
       dont worry. next time we provide you with $service
    a: (![~beverage ~food ~occupation ])
       sorry. I cannot get your [preoccupation][wish][need]
-
 
