@@ -1,0 +1,3 @@
+This software allows the Pepper robot to hold a human-like conversation in the SUTURO16 Project from the Institute of Artificial Intelligence -University of Bremen.
+
+The task of the robot in the project consists in taking care of the clients in a Caffe. The robot wellcome the clients, inform them about the Caffe services, take their orders, forward them to the robot baker and inform the client on the evolution of their requests. 
