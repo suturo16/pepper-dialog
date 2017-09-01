@@ -1,12 +1,104 @@
+outputmacro: ^toInteger($_z)
+	     $_res=0
+	     if($_z>=0){
+		^loop(1000000){
+                      $_res=^compute($_res + 1)
+		      if($_res>$_z){
+                         $_res=^compute($_res - 1)
+			 end(LOOP)
+                      }
+                }
+             }else{
 
-topic: ~identification bot=authentify keep repeat(hello what my name  ~authentification ~numbers ~humannames ONEMORETIMEIDENTIFY LASTTIMEIDENTIFY)
+                ^loop(1000000){
+                      $_res=^compute($_res - 1)
+		      if($_res<$_z){
+                         $_res=^compute($_res + 1)
+			 end(LOOP)
+                      }
+                }
+             }
+	     ^return($_res)
+
+
+
+outputmacro: ^decompressX($_z)
+	      $_j1=^compute(2 * $_z)
+	      $_j2=^compute(0.25 + $_j1)
+	      $_j3=^compute($_j2 root 2 )
+	      $_j4=^compute($_j3 - 0.5)
+	      $_j5=^toInteger($_j4)
+	      $_j8=^compute($_j5 + 1)
+	      $_j9=^compute($_j8 / 2) 
+	      $_j10=^compute( $_j5 * $_j9) 
+	      $_j11=^compute($_z - $_j10)
+	      $_j12= ^compute($_j5 - $_j11)             
+	      $_j=^toInteger($_j12)
+	      ^return($_j)
+	
+outputmacro: ^decompressY($_z)
+	      $_j1=^compute(2 * $_z)
+	      $_j2=^compute(0.25 + $_j1)
+	      $_j3=^compute($_j2 root 2) 
+	      $_j4=^compute($_j3 - 0.5)
+	      $_j5=^toInteger( $_j4)
+              $_j8=^compute($_j5 + 1)
+	      $_j9=^compute($_j8 / 2) 
+	      $_j10=^compute( $_j5 * $_j9) 
+	      $_j11=^compute($_z - $_j10)
+	      $_j=^toInteger($_j11)
+	      ^return($_j)
+	     
+
+topic: ~identification bot=authentify keep repeat(hello what my name  ~authentification ~numbers ~humannames)
 
 #requesters authentification
 t: AUTHEN ()
-	$IDENTIFY;
-	[I am trying to recognize you. please give me few seconds]
-	[Please. just let me identify you]
-	[please give me few seconds to remember your name]
+	if($LASTCOMMAND==$IDENTIFY){
+		$IDENTIFY;
+		[I am trying to recognize you. please give me few seconds]
+		[please. let me identify you]
+		[who are you. please give me few seconds to identify you]
+		$LASTCOMMAND=$IDENTIFYONEMORETIME
+	}else{
+		if($LASTCOMMAND==$IDENTIFYONEMORETIME){
+			$IDENTIFY;
+			[sorry. I cannot see your face]
+			[it is sad, that I cannot see your face]
+			[sorry. I cannot detect your face]
+			[sorry. I cant identify you. your face is not visible to me].
+			[please stay well]
+			[please move a little bit]
+			[please let me see your face].
+			[I try again]
+			$LASTCOMMAND=$IDENTIFYLASTTIME
+		}else{
+			if($LASTCOMMAND==$IDENTIFYLASTTIME){
+				$IDENTIFY;
+				[sorry. I could not finally see your face]
+				[it is sad that I could not finally see your face]
+				[sorry. I could not finally detect your face]
+				[sorry. I could not finally identify you. your face is not visible to me].
+				$LASTCOMMAND=$IDENTIFYMUTE
+			}else{
+				if($LASTCOMMAND==$IDENTIFYMUTE){
+					
+ 					[.]
+					[.]
+					[.]
+					[ still no one.]
+					[.]
+					[.]
+					[.]
+					[it is unbelievable. no one.]
+					[.]
+					[.]	
+					[.]			
+				}			
+			}
+		}
+		       
+	}
 		
 		a: (_~authentification _~humannames _~numbers)
 			$share_authen='_0
@@ -24,19 +116,17 @@ t: AUTHEN ()
 					^reuse(GREETINGS)
 #jump to Introduction topic
 				}else{
-#authen=notwellknownperson
+#authen=notwellknownperson		
+					$newUserId=^decompressY($share_userid)
+					$oldUserId=^decompressX($share_userid)
+					$share_userid=$oldUserId
 					^reuse(GREETINGS2)
 #jump to Introduction topic
 				}
 			}
 
-		a: (ONEMORETIMEIDENTIFY)
-		    ^reuse(ONEMORETIMEIDENTIFY)
-
-		a: (LASTTIMEIDENTIFY)
-		    ^reuse(LASTTIMEIDENTIFY)
-
 		a: ( * )
+
 			^reuse(AUTHEN)
 
 
@@ -80,20 +170,18 @@ t: GREETINGS ()
 		
 		}
 		
-		b: (~yesanswer) 
-			$share_username = $vorusername
-			$AUTHPASS; $share_username; $share_userid;		 
-			ok.      
-			if(%hour<12 ) {good morning} else if(%hour<16) {good afternoon} else {good evening}. $share_username.
-			[welcome][you are welcome][nice to meet you][I am glad to be with you][it is a pleasure to be with you]
-			[nice to see you][I am proud to be with you].
-			[please remember that your id number is $share_userid. Keep it safe. I will use it to identify you as well as your orders]
-			[your id number is $share_userid. I will use it to track you as well as your orders. please keep it safe]
-			[please dont forget that your id number is $share_userid. just keep it safe. I will use it to identify you as well as your 				orders].
 
-		b: (~noanswer) 
+		b: (~noanswer)
+			if($share_authen==notwellknownperson){
+				$share_userid=$newUserId
+			} 
 			it seems you dont want to give me your name. do you
-			c: (~noanswer) 
+
+			c: (~yesanswer)
+				$share_authen=unknownperson
+                    		^reuse(GREETINGS) please
+
+			c: ( * ) 
 		           	$share_username = Sir
 				$AUTHPASS; $share_username; $share_userid;
 				sorry.
@@ -105,13 +193,32 @@ t: GREETINGS ()
 				[your id number is $share_userid. I will use it to track you as well as your orders. please keep it safe]
 				[please dont forget that your id number is $share_userid. just keep it safe. I will use it to identify you as 
                                  well as your orders].
-                	c: (~yesanswer)
-				$share_authen=unknownperson
-                    		^reuse(GREETINGS) please
+                	
+
+		b: ( * ) 
+			$share_username = $vorusername
+			if($share_authen==notwellknownperson){
+				$share_userid=$oldUserId
+			}
+			$AUTHPASS; $share_username; $share_userid;		 
+			ok.      
+			if(%hour<12 ) {good morning} else if(%hour<16) {good afternoon} else {good evening}. $share_username.
+			[welcome][you are welcome][nice to meet you][I am glad to be with you][it is a pleasure to be with you]
+			[nice to see you][I am proud to be with you].
+			[please remember that your id number is $share_userid. Keep it safe. I will use it to identify you as well as your orders]
+			[your id number is $share_userid. I will use it to track you as well as your orders. please keep it safe]
+			[please dont forget that your id number is $share_userid. just keep it safe. I will use it to identify you as well as your 				orders].
+
+		
 
 	a: GREETINGS3 (!~humannames) 
 		it does not sound like a name. do you keep your name private
-		b: (~yesanswer)
+
+		
+		b: (~noanswer)
+			^reuse(GREETINGS) please
+
+		b: ( * )
 			$share_username = Sir 
 			$AUTHPASS; $share_username; $share_userid;
 			sorry.
@@ -123,25 +230,6 @@ t: GREETINGS ()
 			[please dont forget that your id number is $share_userid. just keep it safe. I will use it to identify you as well as 
                         your orders].
 
-		b: (~noanswer)
-			^reuse(GREETINGS) please
-
-
-#! responders for ONEMORETIMEIDENTIFY
-u: ONEMORETIMEIDENTIFY (ONEMORETIMEIDENTIFY)
-			   $ONEMORETIMEIDENTIFY;
-			   [I am sorry. but I cannot detect your face. stay so that I can get you well]
-			   [Please. if you want to talk with me. let me see your face ]
-			   [try to stay correctly for me to get your face]
-
-
-
-#! responders for LASTTIMEIDENTIFY
-u: LASTTIMEIDENTIFY (LASTTIMEIDENTIFY)
-		   $LASTTIMEIDENTIFY;
-		   [I am sorry. could not detect your face. so you dont want to talk to me]
-		   [definitively I cannot see your face. for this reason I cannot talk to you]
-		   [please. I am not able to see your face. so I cannot further talk to you]
 
 
 #! responders for MISUNDERSTANDING
