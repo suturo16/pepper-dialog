@@ -46,6 +46,7 @@ class Client(object):
       def test(self):
 	          i=-1
 		  while True:
+			  rospy.sleep(10)
 			  self.PR2IP=str(rospy.get_param('PR2IP','192.168.101.123'))
 	                  self.PR2PORT=str(rospy.get_param('PR2PORT','37936'))
 			  print self.PR2PORT,self.PR2IP
@@ -55,13 +56,17 @@ class Client(object):
 			  request=[["setCake","0",5,"Franklin"],["setCake","1",5,"Georg"],["getAllGuestInfos","All"],["getGuestInfo","0"],["decreaseCake","1",2],["increaseCake","0",7],["getAllGuestInfos","All"]]
 			  print(self.setter(request[i]))
 			  #print(self.client.cutCake("cake"))
+			 
 			  rospy.sleep(2)
                         #except Exception,e:
 		        #  rospy.logerr("Failed client: "+str(e))
 	  
 
       def getGuestInfo(self,guestId):
-	  try:
+	  try:   
+		self.PR2IP=str(rospy.get_param('PR2IP','192.168.101.123'))
+	        self.PR2PORT=str(rospy.get_param('PR2PORT','37936'))
+		self.client = xmlrpclib.ServerProxy('http://'+self.PR2IP+':'+self.PR2PORT+"/RPC2")
 		res=self.client.getGuestInfo(str(guestId))
 		rospy.logwarn("Request GetGuestInfo to PR2 successfull")
 	  except Exception,e:
@@ -72,6 +77,9 @@ class Client(object):
       def getAllGuestInfos(self,status):
           status="all"
 	  try:
+		self.PR2IP=str(rospy.get_param('PR2IP','192.168.101.123'))
+	        self.PR2PORT=str(rospy.get_param('PR2PORT','37936'))
+		self.client = xmlrpclib.ServerProxy('http://'+self.PR2IP+':'+self.PR2PORT+"/RPC2")
 		res=self.client.getAllGuestInfos(str(status))
 		rospy.logwarn("Request GetAllGuestInfos to PR2 successfull")
 	  except Exception,e:
@@ -115,6 +123,9 @@ class Client(object):
 							return self.getAllGuestInfos(request[1])
 
 		try:    
+			self.PR2IP=str(rospy.get_param('PR2IP','192.168.101.123'))
+	                self.PR2PORT=str(rospy.get_param('PR2PORT','37936'))
+			self.client = xmlrpclib.ServerProxy('http://'+self.PR2IP+':'+self.PR2PORT+"/RPC2")
 			rospy.loginfo('Pass json')
 		        finalrequest=json.dumps(json.loads(finalrequest))
 			rospy.loginfo('Pass json')
@@ -133,8 +144,8 @@ class Client(object):
 if __name__=="__main__":
     
     try:
+        
         Client()
-        #Client().test()
 	rospy.spin()
     except Exception,e:
         rospy.logerr(e)
