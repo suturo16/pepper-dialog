@@ -22,8 +22,8 @@ class DialogManager:
  
         ################# attributes ###########################
 	self.GETGUESTINFO='GETGUESTINFO'
+	self.UPDATEUSERDATA='UPDATEUSERDATA'
 	self.LASTTIMEIDENTIFY='LASTTIMEIDENTIFY'
-	self.ONEMORETIMEIDENTIFY='ONEMORETIMEIDENTIFY'
         self.SIMPLEREQUEST='SIMPLEREQUEST'
 	self.ERRORREQUEST='ERRORREQUEST'
 	self.UNKNOWN_RETURN='UNKNOWNRETURN'
@@ -60,7 +60,7 @@ class DialogManager:
         rospy.init_node('dialogManager')
         rospy.on_shutdown(self.cleanup)
         #publisher to the synthesizer message topics
-        self.pub = rospy.Publisher("synthetiser/message", String ,queue_size=1000)
+        self.pub = rospy.Publisher("synthesizer/message", String ,queue_size=1000)
         # Subscribe to the asr word_recognized topics
         rospy.Subscriber('speechRecognizer/word_recognized', String, self.informationRetrieval)
         # Subscribe to the rpc status topics
@@ -87,14 +87,15 @@ class DialogManager:
 		#check if message type is synchronization/new user detected
 		if msg.data == self.TALKSTART:
 		   #start user recognition/identification
-		   userid=''
+		   userid='-1'
 		   username=''
 		   cInput=':reset'
 		   bot='authentify'
 		   self.corepub.publish(self.TALKSTART+';'+username+';'+userid+';'+bot+';'+cInput)
 		else:
 		   if msg.data == self.TALKEND:
-			pass
+			   #stop conversation since the user left
+			   pass
 		   else:
 			#send recognized words/phrase to core dialogue manager for processing
 			userid=''
@@ -106,7 +107,7 @@ class DialogManager:
 		rospy.loginfo("DialogManager failed to process speechrecognizer's output: "+str(e))
 		username=''
 		userid=''
-		bot='pepper'
+		bot=''
 		cInput=self.UNKNOWN_PARAMETER
 		self.corepub.publish(self.ERRORREQUEST+';'+username+';'+userid+';'+bot+';'+cInput)		
 
@@ -212,19 +213,20 @@ class DialogManager:
 		   else:
 			 if typ=='getGuestInfo':
 				   userid=str(int(message['guestId'].encode('utf8').rstrip().lstrip()))
-				   username=str(int(message['return']['name'].encode('utf8').rstrip().lstrip()))
-				   location=str(message['return']['location'].encode('utf8').rstrip().lstrip())
+				   username=str(message['return']['name'].encode('utf8').rstrip().lstrip())
+				   tableId=str(message['return']['location'].encode('utf8').rstrip().lstrip())
 				   delivered=str(int(message['return']['delivered'].encode('utf8').rstrip().lstrip()))
 				   total=str(int(message['return']['total'].encode('utf8').rstrip().lstrip()))
 				   bot='pepper'
-				   cInput= self.UPDATEUSERDATA+' '+location+' '+total+' '+delivered
+				   #tableId.upper() because chatscript considers with fidelity only original strings 
+				   cInput= self.UPDATEUSERDATA+' '+tableId.upper()+' '+total+' '+delivered
 				   #send response to ChatScript
 				   self.corepub.publish(self.GETGUESTINFO+';'+username+';'+userid+';'+bot+';'+cInput)
 				
 
 		
 	except Exception,e:
-		rospy.loginfo("DialogManager failed to process rpc client's output: "+str(e))
+		rospy.logwarn("DialogManager failed to process rpc client's output: "+str(e))
 		username=''
 		bot='pepper'
 		cInput=self.UNKNOWN_RETURN
@@ -242,6 +244,7 @@ class DialogManager:
 		if command == self.IDENTIFY :
 			usermessage=message[2].rstrip().lstrip()
 			self.LASTSAY=usermessage
+			rospy.logerr('*****************************************EROOOOOR SYNTHESIZER*******************************')
 			self.pub.publish(usermessage)
 			#formulate request to face analyzer
 			data=DialogVisionMsg()
@@ -255,7 +258,7 @@ class DialogManager:
 				 userid=''
 		                 username=''
 				 
-				 cInput=':reset'
+				 cInput=' '
 					
 		   		 bot='authentify'
 		   		 self.corepub.publish(self.TALKSTART+';'+username+';'+userid+';'+bot+';'+cInput)
@@ -288,11 +291,7 @@ class DialogManager:
 			data.commandName='SAVEIMAGES'
 			res=self.dgVsSrvSender(data)
 			if res.commandName == 'REQUESTFAILED':
-				 userid=''
-		                 username=''
-		   		 cInput=':reset'
-		   		 bot='authentify'
-		   		 self.corepub.publish(self.TALKSTART+';'+username+';'+userid+';'+bot+';'+cInput)
+		   		 self.corepub.publish(self.AUTHPASS+';'+username+';'+userid+';'+bot+';'+cInput)
 			else:
 		   		 self.corepub.publish(self.AUTHPASS+';'+username+';'+userid+';'+bot+';'+cInput)
 				 #train the model after new samples
@@ -381,14 +380,9 @@ class DialogManager:
 						 self.clientpub.publish(request)
 					 self.corepub.publish(self.CLOSEUSER+';'+username+';'+userid+';'+bot+';'+cInput)
 				      else:
-					 if command==self.LASTTIMEIDENTIFY:
-						usermessage=message[2].rstrip().lstrip()
-						self.LASTSAY=usermessage
-						self.pub.publish(usermessage)
-					 else:
-						 #simple output from ChatScript'
-						 self.LASTSAY=command
-						 self.pub.publish(command)      																			         
+					 #simple output from ChatScript'
+					 self.LASTSAY=command
+					 self.pub.publish(command)      																			         
 
 
 
