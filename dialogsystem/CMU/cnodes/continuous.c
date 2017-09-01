@@ -60,7 +60,7 @@
 #include <xmlrpc-c/client.h>
 #include "config.h"                           /* information about this build environment */
 #include <fdsink.h>
-
+#include <exception>
 //defined macros
 #define NAME "Xmlrpc-c Test Client"
 #define VERSION "1.0"
@@ -477,10 +477,14 @@ static void recognize_from_microphone(ps_decoder_t* ps, cmd_ln_t* config, int i)
             free(hypobj[i]);
             if(hyp!=NULL){
                     //allocate space for new hypothesis
-                    length=strlen(hyp)+1;
+                    length=strlen(hyp)+50;
                     hypobj[i]=(char*)malloc(sizeof(char)*length);
                     //save hypothesis
-                    strcpy(hypobj[i],hyp);
+		    try{
+                    	strcpy(hypobj[i],hyp);
+	            }catch(exception& e){
+			hypobj[i][0]='\0';
+		    }
                     //save score;
                     scobj[i]=score; 
                     if(scobj[i]<TRESHOLD) 
