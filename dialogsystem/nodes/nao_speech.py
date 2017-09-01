@@ -7,9 +7,9 @@ import sys
 from naoqi import ALProxy
 
 
-class Synthetiser:
+class Synthesizer:
     def __init__(self):
-        rospy.init_node('synthetiser')
+        rospy.init_node('synthesizer')
         rospy.on_shutdown(self.cleanup)
         #read the parameter
         self.PEPPERIP = rospy.get_param("PEPPERIP", "192.168.101.69")
@@ -26,11 +26,11 @@ class Synthetiser:
         except:
             rospy.loginfo("Could not set the volume")
         # Subscribe to the message topics
-        rospy.Subscriber('~message', String, self.synthetise)
+        rospy.Subscriber('~message', String, self.synthesize)
 
        
     #synthesize msg to voice   
-    def synthetise(self, msg):
+    def synthesize(self, msg):
         #speak
         if(self.tts!=None):
                 #self.mic_spk.closeAudioInputs()
@@ -43,20 +43,20 @@ class Synthetiser:
 			self.tts.say('I found some problems')
 		# Print the recognized words on the screen
 		rospy.loginfo(msg.data)
-		rospy.sleep(5)
+		rospy.sleep(3)
                 #self.mic_spk.openAudioInputs()
 		rospy.set_param('busy',0)
         else:
             rospy.loginfo("Speech synthesis cannot be provided...")
     def cleanup(self):
-        rospy.loginfo("Shutting down synthetiser node...")
+        rospy.loginfo("Shutting down synthesizer node...")
 
 
 
 if __name__=="__main__":
     
     try:
-        Synthetiser()
+        Synthesizer()
         rospy.spin()
     except:
-        pass
+	pass
