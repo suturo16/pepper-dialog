@@ -653,7 +653,6 @@ main(int argc, char *argv[])
    mllr=stconvert(ASRCWD+"/"+MLLR);
 
    int t=0,rc;
-   strlen(NULL);
    //init gstreamer
    gst_init(&argc, &argv);
    //create pipes
