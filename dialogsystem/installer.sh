@@ -10,7 +10,12 @@ export GIT_DIALOG_REPO=pepper-dialog
 export DIALOG_PACKAGE_NAME=dialogsystem
 export GIT_CHATSCRIPT=https://github.com/bwilcox-1234/ChatScript
 export PYTHON_NAOQI_TAR_GZ_PATH=$HOME/Downloads/pynaoqi-python2.7-2.5.5.5-linux64.tar.gz
-export GIT_ROS_NAOQI_BRIDGE= https://github.com/ros-naoqi/naoqi_bridge_msgs
+export GIT_ROS_NAOQI_BRIDGE=https://github.com/ros-naoqi/naoqi_bridge_msgs
+export CMU_SPHINX_ROOT=sphinx-source
+export GIT_SPHINXBASE=https://github.com/cmusphinx/sphinxbase
+export GIT_POCKETSPHINX=https://github.com/cmusphinx/pocketsphinx
+export GIT_SHINXTRAIN=https://github.com/cmusphinx/sphinxtrain
+
 
 tput setaf 7
 #create package's and source's folder
@@ -68,6 +73,19 @@ cd ..
 catkin build 
 cd $PACKAGE_SOURCE/$GIT_DIALOG_REPO/$DIALOG_PACKAGE_NAME
 
+tput setaf 7
+#install  
+echo "Cloning modified CMU Sphinx ..."
+tput setaf 2
+cd CMU
+mkdir $CMU_SPHINX_ROOT
+cd $CMU_SPHINX_ROOT
+git clone $GIT_SPHINXBASE
+git clone $GIT_POCKETSPHINX
+git clone $GIT_SHINXTRAIN
+cd ..
+cd ..
+
 
 
 tput setaf 7
@@ -75,6 +93,63 @@ tput setaf 7
 echo "Installing modified CMU PocketSphinx ..."
 echo "Installing dependencies"
 tput setaf 2
-cd CMU
-sudo apt-get install gcc g++ automake autoconf libtool bison swig python-dev libpulse-dev libboost-dev libxmlrpc-core-c3-dev
+cd CMU/cnodes
+cp fdsink.h ../$CMU_SPHINX_ROOT/pocketsphinx/include
+cd ..
+#modify speech recognizer
+cd $CMU_SPHINX_ROOT/pocketsphinx/src/programs
+rm  -r -f continuous.c
+cd ..
+cd ..
+cd ..
+cd ..
+cd cnodes
+cp continuous.cpp ../$CMU_SPHINX_ROOT/pocketsphinx/src/programs
+cd ..
+cd ..
+sudo apt-get install gcc g++ automake autoconf libtool bison swig python-dev libpulse-dev libboost-dev libxmlrpc-core-c3-dev libgstreamer1.0-0 gstreamer1.0-tools libglib2.0-dev
 
+
+
+tput setaf 7
+#install  
+echo "Compiling CMU Sphinxbase ..."
+tput setaf 2
+cd CMU/$CMU_SPHINX_ROOT/sphinxbase
+./autogen.sh
+make
+sudo make install
+cd ..
+cd ..
+cd ..
+
+put setaf 7
+#install  
+echo "Compiling CMU Sphinxtrain ..."
+tput setaf 2
+cd CMU/$CMU_SPHINX_ROOT/sphinxtrain
+./autogen.sh
+make
+sudo make install
+cd ..
+cd ..
+cd ..
+
+put setaf 7
+#install  
+echo "Compiling CMU pocketsphinx ..."
+tput setaf 2
+cd CMU/$CMU_SPHINX_ROOT/pocketsphinx
+rm -r -f configure.ac
+cd src/programs
+rm -r -f Makefile.am
+cd ../../../../cnodes
+cp Makefile.am ../$CMU_SPHINX_ROOT/pocketsphinx/src/programs
+cp configure.ac ../$CMU_SPHINX_ROOT/pocketsphinx
+cd ../$CMU_SPHINX_ROOT/pocketsphinx
+./autogen.sh
+make
+sudo make install
+cd ..
+cd ..
+cd ..
