@@ -1,8 +1,8 @@
 #Variables. Change the default values if needed
 
-tput setaf 7
-echo "Initialiyzing temporary global variables ..."
 tput setaf 2
+echo "Initialiyzing temporary global variables ..."
+tput setaf 7
 export PACKAGE_FOLDER=pepperdialog
 export PACKAGE_SOURCE=src
 export GIT_DIALOG_SYSTEM=https://github.com/suturo16/pepper-dialog
@@ -17,55 +17,55 @@ export GIT_POCKETSPHINX=https://github.com/cmusphinx/pocketsphinx
 export GIT_SHINXTRAIN=https://github.com/cmusphinx/sphinxtrain
 
 
-tput setaf 7
+tput setaf 2
 #create package's and source's folder
 echo "Creating package folder and source folder ..."
-tput setaf 2
+tput setaf 7
 mkdir $PACKAGE_FOLDER
 cd $PACKAGE_FOLDER
 mkdir $PACKAGE_SOURCE 
 
-tput setaf 7
+tput setaf 2
 #clone Dialog System Git Repository
 echo "Cloning Dialog System Git Repository ..."
-tput setaf 2
+tput setaf 7
 cd $PACKAGE_SOURCE 
 git clone $GIT_DIALOG_SYSTEM
 
-tput setaf 7
+tput setaf 2
 #clone ChatSrcipt Git Repository
 echo "Cloning ChatScript Git Repository ..."
-tput setaf 2
+tput setaf 7
 cd $GIT_DIALOG_REPO/$DIALOG_PACKAGE_NAME 
 git clone $GIT_CHATSCRIPT
 
-tput setaf 7
+tput setaf 2
 #install ChatSrcipt
 echo "Installing ChatScript ..."
-tput setaf 2
+tput setaf 7
 cp -r PEPPER1 ChatScript/RAWDATA
 cp -r PEPPER2 ChatScript/RAWDATA
 cp -r filespepper.txt ChatScript/RAWDATA
 
-tput setaf 7
+tput setaf 2
 #make ChatScript executable 
 echo "Making ChatScript executable ..."
-tput setaf 2
+tput setaf 7
 sudo chmod +x ChatScript/BINARIES/LinuxChatScript64
 
-tput setaf 7
+tput setaf 2
 #install python naoqi
 echo "Installing Python Naoqi ..."
-tput setaf 2
+tput setaf 7
 cd NAOqi
 tar -xf $PYTHON_NAOQI_TAR_GZ_PATH
 cd ..
 echo export PYTHONPATH="$"PYTHONPATH:$PWD/NAOqi/pynaoqi-python2.7-2.5.5.5-linux64/lib/python2.7/site-packages >> $HOME/.bashrc
 
-tput setaf 7
+tput setaf 2
 #install ros-naoqi bridge 
 echo "Installing ros-naoqi bridge ..."
-tput setaf 2
+tput setaf 7
 cd ..
 git clone $GIT_ROS_NAOQI_BRIDGE
 cd ..
@@ -73,10 +73,10 @@ cd ..
 catkin build 
 cd $PACKAGE_SOURCE/$GIT_DIALOG_REPO/$DIALOG_PACKAGE_NAME
 
-tput setaf 7
+tput setaf 2
 #install  
 echo "Cloning modified CMU Sphinx ..."
-tput setaf 2
+tput setaf 7
 cd CMU
 mkdir $CMU_SPHINX_ROOT
 cd $CMU_SPHINX_ROOT
@@ -88,11 +88,11 @@ cd ..
 
 
 
-tput setaf 7
+tput setaf 2
 #install  
 echo "Installing modified CMU PocketSphinx ..."
 echo "Installing dependencies"
-tput setaf 2
+tput setaf 7
 cd CMU/cnodes
 cp fdsink.h ../$CMU_SPHINX_ROOT/pocketsphinx/include
 cd ..
@@ -111,10 +111,10 @@ sudo apt-get install gcc g++ automake autoconf libtool bison swig python-dev lib
 
 
 
-tput setaf 7
+tput setaf 2
 #install  
 echo "Compiling CMU Sphinxbase ..."
-tput setaf 2
+tput setaf 7
 cd CMU/$CMU_SPHINX_ROOT/sphinxbase
 ./autogen.sh
 make
@@ -123,10 +123,10 @@ cd ..
 cd ..
 cd ..
 
-put setaf 7
+tput setaf 2
 #install  
 echo "Compiling CMU Sphinxtrain ..."
-tput setaf 2
+tput setaf 7
 cd CMU/$CMU_SPHINX_ROOT/sphinxtrain
 ./autogen.sh
 make
@@ -135,10 +135,10 @@ cd ..
 cd ..
 cd ..
 
-put setaf 7
+tput setaf 2
 #install  
 echo "Compiling CMU pocketsphinx ..."
-tput setaf 2
+tput setaf 7
 cd CMU/$CMU_SPHINX_ROOT/pocketsphinx
 rm -r -f configure.ac
 cd src/programs
@@ -153,3 +153,13 @@ sudo make install
 cd ..
 cd ..
 cd ..
+
+tput setaf 2
+#install  
+echo "Installing OpenCV 3 ..."
+tput setaf 7
+sudo apt-get install ros-indigo-opencv3
+tput setaf 2
+echo "Installation of Dialog System successfully terminated !"
+tput setaf 7
+echo "End."
