@@ -18,6 +18,13 @@ export GIT_SHINXTRAIN=https://github.com/cmusphinx/sphinxtrain
 
 
 tput setaf 2
+#Cleaning Workspace
+echo "Cleaning and Preparing Workspace $GIT_DIALOG_REPO ..."
+tput setaf 7
+rm -r -f $GIT_DIALOG_REPO
+
+
+tput setaf 2
 #create package's and source's folder
 echo "Creating package folder and source folder ..."
 tput setaf 7
