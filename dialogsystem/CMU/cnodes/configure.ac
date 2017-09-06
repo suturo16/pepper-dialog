@@ -32,6 +32,7 @@ if test "x${with_python}" != "xno"; then
 fi
 
 AC_SUBST([PYTHON_CPPFLAGS])
+CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
 AM_CONDITIONAL(BUILD_SWIG, test "x$SWIG" != "x")
 
 #Checks for  gst
@@ -44,6 +45,7 @@ PKG_CHECK_MODULES(GStreamer, [gstreamer-$GST_MAJORMINOR >= 1.0
 AM_CONDITIONAL(BUILD_GST, test x$cross_compiling != xyes && test "x$HAVE_GST" = "xyes")
 GST_CFLAGS="$GStreamer_CFLAGS $GStreamer_ERROR"
 GST_LIBS="$GStreamer_LIBS"
+CPPFLAGS="$CPPFLAGS $GST_CFLAGS"
 AC_SUBST(GST_MAJORMINOR)
 AC_SUBST(GST_CFLAGS)
 AC_SUBST(GST_LIBS)
@@ -162,7 +164,7 @@ AC_CHECK_LIB([xmlrpc_util], [main])
 
 # Checks for header files.
 
-AC_CHECK_HEADERS([fcntl.h float.h limits.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h float.h limits.h stdlib.h gst.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
