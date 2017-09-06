@@ -155,10 +155,17 @@ cd ..
 cd ..
 
 tput setaf 2
-#install  
+#install  opencv
 echo "Installing OpenCV 3 ..."
 tput setaf 7
 sudo apt-get install ros-indigo-opencv3
+
+tput setaf 2
+#creating launch file
+echo "Creating launch file ..."
+tput setaf 7
+cp launcher.sh ../../../
+
 tput setaf 2
 echo "Installation of Dialog System successfully terminated !"
 tput setaf 7
