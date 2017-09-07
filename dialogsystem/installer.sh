@@ -200,6 +200,9 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=../../$OPENCV_INSTALL_
 make -j4
 sudo make install
 sudo ldconfig
+cd ..
+cd ..
+cd ..
 
 tput setaf 2
 #creating launch file
