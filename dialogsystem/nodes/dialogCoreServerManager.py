@@ -35,6 +35,7 @@ class DialogCoreClientManager(object):
         self.INIT   =':INIT'
         self.USERID='-1'
 	self.USERNAME=''
+	self.ISSTART=True
         rospy.init_node('dialogCoreServerManager')
         rospy.on_shutdown(self.cleanup)
         rospy.loginfo("Starting core server manager node...")
@@ -98,6 +99,18 @@ class DialogCoreClientManager(object):
           try:
 		  #split msg and decapsulate it
 		  # the format of msg.data is self.COMMAND+';'+username+';'+userid+';'+bot+';'+cInput
+		  if self.ISSTART:
+			userId=self.USERID
+			bot=self.BOT
+			data=self.DATA_IN
+			self.USERID='-1'
+			self.BOT='authentify'
+			self.DATA_IN=':build pepper'
+			self.queryChatScript()
+		        self.USERID=userId
+			self.BOT=bot
+			self.DATA_IN=data
+			self.ISSTART=False
 		  message=msg.data.split(';')
 
 		  command=message[0].rstrip().lstrip()
