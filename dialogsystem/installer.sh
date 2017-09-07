@@ -4,6 +4,7 @@ tput setaf 2
 echo "Initialiyzing temporary global variables ..."
 tput setaf 7
 export PACKAGE_FOLDER=pepperdialog
+export OPENCV_FOLDER=OpenCV
 export PACKAGE_SOURCE=src
 export GIT_DIALOG_SYSTEM=https://github.com/suturo16/pepper-dialog
 export GIT_DIALOG_REPO=pepper-dialog
@@ -15,7 +16,8 @@ export CMU_SPHINX_ROOT=sphinx-source
 export GIT_SPHINXBASE=https://github.com/cmusphinx/sphinxbase
 export GIT_POCKETSPHINX=https://github.com/cmusphinx/pocketsphinx
 export GIT_SHINXTRAIN=https://github.com/cmusphinx/sphinxtrain
-
+export GIT_OPENCV=https://github.com/Itseez/opencv.git
+export GIT_OPENCV_CONTRIB=https://github.com/Itseez/opencv_contrib.git
 
 tput setaf 2
 #Cleaning Workspace
@@ -165,7 +167,39 @@ tput setaf 2
 #install  opencv
 echo "Installing OpenCV 3 ..."
 tput setaf 7
-sudo apt-get install ros-indigo-opencv3
+mkdir $OPENCV_FOLDER
+cd $OPENCV_FOLDER
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install build-essential cmake git pkg-config 
+sudo apt-get install libjpeg8-dev libtiff4-dev 
+sudo apt-get install libjasper-dev libpng12-dev
+sudo apt-get install libgtk2.0-dev
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev
+sudo apt-get install libv4l-dev
+sudo apt-get install libatlas-base-dev gfortran
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python get-pip.py
+sudo apt-get install python2.7-dev
+sudo pip install numpy
+git clone $GIT_OPENCV
+cd opencv
+git checkout 3.0.0
+cd ..
+git clone $GIT_OPENCV_CONTRIB
+cd opencv_contrib
+git checkout 3.0.0
+cd ..
+cd opencv
+mkdir build 
+cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON \
+      -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -D BUILD_EXAMPLES=ON -D BUILD_opencv_gpu=OFF -D WITH_CUDA=OFF ..
+make -j4
+sudo make install
+sudo ldconfig
+
+
 
 tput setaf 2
 #creating launch file
@@ -176,4 +210,5 @@ cp launcher.sh ../../../
 tput setaf 2
 echo "Installation of Dialog System successfully terminated !"
 tput setaf 7
+source $HOME/.bashrc
 echo "End."
