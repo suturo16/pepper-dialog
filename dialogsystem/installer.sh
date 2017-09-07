@@ -203,6 +203,7 @@ sudo ldconfig
 cd ..
 cd ..
 cd ..
+echo export PYTHONPATH=$PWD/$OPENCV_FOLDER/$OPENCV_INSTALL_FOLDER/lib/python2.7/dist-packages:"$"PYTHONPATH >> $HOME/.bashrc
 
 tput setaf 2
 #creating launch file
